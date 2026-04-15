@@ -7,13 +7,6 @@ dotenv.config();
 
 dotenv.config();
 
-// DEBUG - Add these lines temporarily
-console.log("=== DEBUG ENV ===");
-console.log("All env keys:", Object.keys(process.env));
-console.log("MONGO_URL value:", process.env.MONGO_URL);
-console.log("PORT value:", process.env.PORT);
-console.log("=================");
-
 import { connectDB } from "./db.js";
 import { Song } from "./models/song.model.js";
 
