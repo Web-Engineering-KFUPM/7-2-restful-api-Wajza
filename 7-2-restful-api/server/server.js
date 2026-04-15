@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 await connectDB(process.env.MONGO_URL);
+
 // api/songs (Read all songs)
 app.get("/api/songs", async (req, res) => {
   try {
@@ -33,6 +34,7 @@ app.get("/api/songs", async (req, res) => {
     });
   }
 });
+
 // api/songs (Insert song)
 app.post("/api/songs", async (req, res) => {
   try {
@@ -69,3 +71,69 @@ app.post("/api/songs", async (req, res) => {
     });
   }
 });
+
+// /api/songs/:id (Update song)
+app.put("/api/songs/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, artist, album, year, genre, duration } = req.body;
+    
+    const existingSong = await Song.findById(id);
+    if (!existingSong) {
+      return res.status(404).json({
+        success: false,
+        message: "Song not found"
+      });
+    }
+    
+    const updatedSong = await Song.findByIdAndUpdate(
+      id,
+      { title, artist, album, year, genre, duration },
+      { new: true, runValidators: true }
+    );
+    
+    res.status(200).json({
+      success: true,
+      message: "Song updated successfully",
+      data: updatedSong
+    });
+  } catch (error) {
+    console.error("Error updating song:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update song",
+      error: error.message
+    });
+  }
+});
+
+// /api/songs/:id (Delete song)
+app.delete("/api/songs/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const deletedSong = await Song.findByIdAndDelete(id);
+    
+    if (!deletedSong) {
+      return res.status(404).json({
+        success: false,
+        message: "Song not found"
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "Song deleted successfully",
+      data: deletedSong
+    });
+  } catch (error) {
+    console.error("Error deleting song:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete song",
+      error: error.message
+    });
+  }
+});
+
+app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
