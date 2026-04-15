@@ -33,3 +33,39 @@ app.get("/api/songs", async (req, res) => {
     });
   }
 });
+// api/songs (Insert song)
+app.post("/api/songs", async (req, res) => {
+  try {
+    const { title, artist, album, year, genre, duration } = req.body;
+    
+  
+    if (!title || !artist) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and artist are required fields"
+      });
+    }
+    
+    const newSong = await Song.create({
+      title,
+      artist,
+      album,
+      year,
+      genre,
+      duration
+    });
+    
+    res.status(201).json({
+      success: true,
+      message: "Song created successfully",
+      data: newSong
+    });
+  } catch (error) {
+    console.error("Error creating song:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create song",
+      error: error.message
+    });
+  }
+});
