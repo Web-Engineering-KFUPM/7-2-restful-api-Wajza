@@ -51,7 +51,15 @@ app.post("/api/songs", async (req, res) => {
   }
 });
 // /api/songs/:id (Update song)
-
+app.put("/api/songs/:id", async (req, res) => {
+  try {
+    const u= await Song.findByIdAndUpdate(req.params.id, req.body|| {}, { new: true, runValidators: true, context: "query" });
+    if (!u) return res.status(404).json({ message: "Song not found" });
+    res.json(u);
+  } catch (err) {
+    res.status(400).json({ message: err.message || "Failed to update song" });
+  }
+});
 
 // /api/songs/:id (Delete song)
 
